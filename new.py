@@ -22,7 +22,7 @@ def todo_helper(todo) -> dict:
 
 @app.get("/", tags=['root'])
 async def root() -> dict:
-    return {"Ping": "Pong"}
+    return {"Ping": "data"}
 
 
 @app.get("/todo", tags=['Todos'], response_model=List[dict])

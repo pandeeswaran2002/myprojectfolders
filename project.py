@@ -15,7 +15,7 @@ async def read_root():
 @app.get("/todos")
 async def get_todos():
     todos = await db.todos.find().to_list(1000)
-    return todos
+    return {"message": "welcome everyone"}
 
 @app.post("/todos")
 async def create_todo(todo: dict):

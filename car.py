@@ -18,13 +18,15 @@ class carmodel(BaseModel):
     brand:str
     model:str
     price:str
+    colour:str
 
 def car_helper(car) -> dict:
     return {
         "id": str(car["_id"]),
         "brand": car["brand"],
         "model": car["model"],
-        "price": car["price"]
+        "price": car["price"],
+        "colour": car["colour"]
     } 
 
 

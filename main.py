@@ -24,6 +24,7 @@ class StudentModel(BaseModel):# studentmodel class created and inheriteby basemo
     name: str # name variable created and specifiy by variable string
     regno: str # regno variable created and specifiy by variable string
     father_name: str  # fathername variable created and specifiy by variable string
+    mother_name: str
 
 # Helper function to convert MongoDB document to dictionary
 def student_helper(student) -> dict:# this commend purpose is create funtion and take the agument students 
@@ -31,7 +32,8 @@ def student_helper(student) -> dict:# this commend purpose is create funtion and
         "id": str(student["_id"]),
         "name": student["name"],
         "regno": student["regno"],
-        "father_name": student["father_name"]
+        "father_name": student["father_name"],
+        "mother_name": student["mother_name"]
     } # this returns values of student data
 
 @app.get("/", tags=['root'])# it is used check correctly work your server basicly it is used check the api application

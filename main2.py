@@ -8,7 +8,7 @@ app = FastAPI()
 class TodoItem(BaseModel):
     id: int
     task: str
-    completed: bool = False
+    completed: bool = True
 
 # In-memory storage for to-do items
 todo_list: List[TodoItem] = []
