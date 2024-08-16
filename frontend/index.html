@@ -1,0 +1,115 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="referrer" content="strict-origin-when-cross-origin">
+    <title>Bike Details</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 20px;
+        }
+        .form-group {
+            margin-bottom: 10px;
+        }
+        .form-group label {
+            display: block;
+            margin-bottom: 5px;
+        }
+        .form-group input {
+            width: 100%;
+            padding: 8px;
+            box-sizing: border-box;
+        }
+        .form-group button {
+            padding: 10px 20px;
+            background-color: #007bff;
+            color: #fff;
+            border: none;
+            cursor: pointer;
+        }
+        .form-group button:hover {
+            background-color: #0056b3;
+        }
+        .bike-list {
+            margin-top: 20px;
+        }
+        .bike-list ul {
+            list-style-type: none;
+            padding: 0;
+        }
+        .bike-list li {
+            padding: 10px;
+            border-bottom: 1px solid #ddd;
+        }
+    </style>
+</head>
+<body>
+    <h1>Bike Details</h1>
+    <div class="form-group">
+        <label for="name">Name:</label>
+        <input type="text" id="name">
+    </div>
+    <div class="form-group">
+        <label for="color">Color:</label>
+        <input type="text" id="color">
+    </div>
+    <div class="form-group">
+        <label for="price">Price:</label>
+        <input type="text" id="price">
+    </div>
+    <div class="form-group">
+        <button id="add-bike">Add Bike</button>
+    </div>
+    <div class="bike-list">
+        <h2>Bike List</h2>
+        <ul id="bike-list">
+            <!-- Bike details will be added here -->
+        </ul>
+    </div>
+    <script>
+        document.getElementById('add-bike').addEventListener('click', async () => {
+            const name = document.getElementById('name').value;
+            const color = document.getElementById('color').value;
+            const price = document.getElementById('price').value;
+    
+            const response = await fetch('http://127.0.0.1:8000/bikes/', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify({ name, color, price: parseFloat(price) }),
+            });
+    
+            if (response.ok) {
+                const bike = await response.json();
+                const bikeList = document.getElementById('bike-list');
+                const listItem = document.createElement('li');
+                listItem.textContent = `Name: ${bike.name}, Color: ${bike.color}, Price: ${bike.price}`;
+                bikeList.appendChild(listItem);
+            } else {
+                alert('Error adding bike.');
+            }
+        });
+    
+        async function loadBikes() {
+            const response = await fetch('http://127.0.0.1:8000/bikes/');
+            if (response.ok) {
+                const bikes = await response.json();
+                const bikeList = document.getElementById('bike-list');
+                bikeList.innerHTML = ''; // Clear existing list
+                bikes.forEach(bike => {
+                    const listItem = document.createElement('li');
+                    listItem.textContent = `Name: ${bike.name}, Color: ${bike.color}, Price: ${bike.price}`;
+                    bikeList.appendChild(listItem);
+                });
+            } else {
+                alert('Error fetching bike list.');
+            }
+        }
+    
+        // Load bikes when the page loads
+        window.onload = loadBikes;
+    </script>
+    
