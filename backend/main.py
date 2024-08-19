@@ -3,7 +3,6 @@ from pydantic import BaseModel
 from typing import List
 from fastapi.middleware.cors import CORSMiddleware
 
-
 app = FastAPI()
 
 origins = [
@@ -17,7 +16,6 @@ app.add_middleware(
     allow_methods=["*"],
     allow_headers=["*"],
 )
-
 
 # In-memory storage for bike details
 bikes = []
@@ -43,6 +41,14 @@ def get_bike(bike_name: str):
             return bike
     raise HTTPException(status_code=404, detail="Bike not found")
 
+@app.put("/bikes/{bike_name}", response_model=Bike)
+def update_bike(bike_name: str, updated_bike: Bike):
+    for i, bike in enumerate(bikes):
+        if bike.name == bike_name:
+            bikes[i] = updated_bike
+            return updated_bike
+    raise HTTPException(status_code=404, detail="Bike not found")
+
 @app.delete("/bikes/{bike_name}", response_model=Bike)
 def delete_bike(bike_name: str):
     global bikes
@@ -51,3 +57,14 @@ def delete_bike(bike_name: str):
             bikes = [b for b in bikes if b.name != bike_name]
             return bike
     raise HTTPException(status_code=404, detail="Bike not found")
+
+
+
+
+
+
+
+
+
+
+

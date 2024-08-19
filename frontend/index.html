@@ -1,4 +1,4 @@
-<!DOCTYPE html>
+<!<!DOCTYPE html>
 <html lang="en">
 <head>
     <meta charset="UTF-8">
@@ -47,6 +47,8 @@
 </head>
 <body>
     <h1>Bike Details</h1>
+
+    <!-- Add Bike Form -->
     <div class="form-group">
         <label for="name">Name:</label>
         <input type="text" id="name">
@@ -62,54 +64,162 @@
     <div class="form-group">
         <button id="add-bike">Add Bike</button>
     </div>
+
+    <!-- Update Bike Form -->
+    <div class="form-group">
+        <label for="name">Update Name:</label>
+        <input type="text" id="name" placeholder="Bike name to update">
+    </div>
+    <div class="form-group">
+        <label for="update-color">Update Color:</label>
+        <input type="text" id="update-color">
+    </div>
+    <div class="form-group">
+        <label for="update-price">Update Price:</label>
+        <input type="text" id="update-price">
+    </div>
+    <div class="form-group">
+        <button id="update-bike">Update Bike</button>
+    </div>
+
+    <!-- Delete Bike Form -->
+    <div class="form-group">
+        <label for="delete-name">Delete Name:</label>
+        <input type="text" id="delete-name" placeholder="Bike name to delete">
+    </div>
+    <div class="form-group">
+        <button id="delete-bike">Delete Bike</button>
+    </div>
+
     <div class="bike-list">
         <h2>Bike List</h2>
         <ul id="bike-list">
             <!-- Bike details will be added here -->
         </ul>
     </div>
+
     <script>
         document.getElementById('add-bike').addEventListener('click', async () => {
-            const name = document.getElementById('name').value;
-            const color = document.getElementById('color').value;
-            const price = document.getElementById('price').value;
-    
-            const response = await fetch('http://127.0.0.1:8000/bikes/', {
-                method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json',
-                },
-                body: JSON.stringify({ name, color, price: parseFloat(price) }),
-            });
-    
-            if (response.ok) {
-                const bike = await response.json();
-                const bikeList = document.getElementById('bike-list');
-                const listItem = document.createElement('li');
-                listItem.textContent = `Name: ${bike.name}, Color: ${bike.color}, Price: ${bike.price}`;
-                bikeList.appendChild(listItem);
-            } else {
-                alert('Error adding bike.');
+            const name = document.getElementById('name').value.trim();
+            const color = document.getElementById('color').value.trim();
+            const price = document.getElementById('price').value.trim();
+
+            if (!name || !color || isNaN(price)) {
+                alert('Please fill out all fields correctly.');
+                return;
             }
-        });
-    
-        async function loadBikes() {
-            const response = await fetch('http://127.0.0.1:8000/bikes/');
-            if (response.ok) {
-                const bikes = await response.json();
-                const bikeList = document.getElementById('bike-list');
-                bikeList.innerHTML = ''; // Clear existing list
-                bikes.forEach(bike => {
+
+            try {
+                const response = await fetch('http://127.0.0.1:8000/bikes/', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify({ name, color, price: parseFloat(price) }),
+                });
+
+                if (response.ok) {
+                    const bike = await response.json();
+                    const bikeList = document.getElementById('bike-list');
                     const listItem = document.createElement('li');
                     listItem.textContent = `Name: ${bike.name}, Color: ${bike.color}, Price: ${bike.price}`;
                     bikeList.appendChild(listItem);
+                } else {
+                    const error = await response.json();
+                    alert(`Error adding bike: ${error.detail}`);
+                }
+            } catch (error) {
+                console.error('Error:', error);
+                alert('Network error occurred. Please try again.');
+            }
+        });
+
+        document.getElementById('update-bike').addEventListener('click', async () => {
+            const name = document.getElementById('name').value.trim();
+            const color = document.getElementById('update-color').value.trim();
+            const price = document.getElementById('update-price').value.trim();
+
+            if (!name || !color || isNaN(price)) {
+                alert('Please fill in all fields correctly.');
+                return;
+            }
+
+            try {
+                const response = await fetch(`http://127.0.0.1:8000/bikes/${name}`, {
+                     method: 'PUT',
+                     headers: {
+                        'Content-Type': 'application/json',
+                     },
+                     body: JSON.stringify({ color, price: parseFloat(price) }),
                 });
-            } else {
-                alert('Error fetching bike list.');
+
+                if (response.ok) {
+                    const bike = await response.json();
+                    alert(`Bike updated: ${bike.name}`);
+                    loadBikes(); // Refresh the list of bikes
+                } else {
+                    const error = await response.json();
+                    alert(`Error updating bike: ${error.detail || JSON.stringify(error)}`);
+                }
+            } catch (error) {
+                console.error('Error:', error);
+                alert('Network error occurred. Please try again.');
+            }
+        });
+
+
+
+        document.getElementById('delete-bike').addEventListener('click', async () => {
+            const name = document.getElementById('delete-name').value.trim();
+
+            if (!name) {
+                alert('Please provide the name of the bike to delete.');
+                return;
+            }
+
+            try {
+                const response = await fetch(`http://127.0.0.1:8000/bikes/${name}`, {
+                    method: 'DELETE',
+                });
+
+                if (response.ok) {
+                    const bike = await response.json();
+                    alert(`Bike deleted: ${bike.name}`);
+                    loadBikes(); // Refresh the list of bikes
+                } else {
+                    const error = await response.json();
+                    alert(`Error deleting bike: ${error.detail}`);
+                }
+            } catch (error) {
+                console.error('Error:', error);
+                alert('Network error occurred. Please try again.');
+            }
+        });
+
+        async function loadBikes() {
+            try {
+                const response = await fetch('http://127.0.0.1:8000/bikes/');
+                if (response.ok) {
+                    const bikes = await response.json();
+                    const bikeList = document.getElementById('bike-list');
+                    bikeList.innerHTML = ''; // Clear existing list
+                    bikes.forEach(bike => {
+                        const listItem = document.createElement('li');
+                        listItem.textContent = `Name: ${bike.name}, Color: ${bike.color}, Price: ${bike.price}`;
+                        bikeList.appendChild(listItem);
+                    });
+                } else {
+                    const error = await response.json();
+                    alert(`Error fetching bike list: ${error.detail}`);
+                }
+            } catch (error) {
+                console.error('Error:', error);
+                alert('Network error occurred. Please try again.');
             }
         }
-    
+
         // Load bikes when the page loads
         window.onload = loadBikes;
     </script>
-    
+</body>
+</html>
