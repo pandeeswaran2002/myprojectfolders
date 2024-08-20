@@ -1,4 +1,4 @@
-<!<!DOCTYPE html>
+<!DOCTYPE html>
 <html lang="en">
 <head>
     <meta charset="UTF-8">
@@ -51,7 +51,7 @@
     <!-- Add Bike Form -->
     <div class="form-group">
         <label for="name">Name:</label>
-        <input type="text" id="name">
+        <input type="text" id="name" placeholder="Bike Name">
     </div>
     <div class="form-group">
         <label for="color">Color:</label>
@@ -67,8 +67,8 @@
 
     <!-- Update Bike Form -->
     <div class="form-group">
-        <label for="name">Update Name:</label>
-        <input type="text" id="name" placeholder="Bike name to update">
+        <label for="update-name">Update Name:</label>
+        <input type="text" id="update-name" placeholder="Bike Name to Update">
     </div>
     <div class="form-group">
         <label for="update-color">Update Color:</label>
@@ -85,7 +85,7 @@
     <!-- Delete Bike Form -->
     <div class="form-group">
         <label for="delete-name">Delete Name:</label>
-        <input type="text" id="delete-name" placeholder="Bike name to delete">
+        <input type="text" id="delete-name" placeholder="Bike Name to Delete">
     </div>
     <div class="form-group">
         <button id="delete-bike">Delete Bike</button>
@@ -135,7 +135,7 @@
         });
 
         document.getElementById('update-bike').addEventListener('click', async () => {
-            const name = document.getElementById('name').value.trim();
+            const name = document.getElementById('update-name').value.trim();
             const color = document.getElementById('update-color').value.trim();
             const price = document.getElementById('update-price').value.trim();
 
@@ -143,14 +143,13 @@
                 alert('Please fill in all fields correctly.');
                 return;
             }
-
             try {
                 const response = await fetch(`http://127.0.0.1:8000/bikes/${name}`, {
-                     method: 'PUT',
-                     headers: {
+                    method: 'PUT',
+                    headers: {
                         'Content-Type': 'application/json',
-                     },
-                     body: JSON.stringify({ color, price: parseFloat(price) }),
+                    },
+                    body: JSON.stringify({ name, color, price: parseFloat(price) }),
                 });
 
                 if (response.ok) {
@@ -159,15 +158,13 @@
                     loadBikes(); // Refresh the list of bikes
                 } else {
                     const error = await response.json();
-                    alert(`Error updating bike: ${error.detail || JSON.stringify(error)}`);
+                    alert(`Error updating bike: ${error.detail}`);
                 }
             } catch (error) {
                 console.error('Error:', error);
                 alert('Network error occurred. Please try again.');
             }
         });
-
-
 
         document.getElementById('delete-bike').addEventListener('click', async () => {
             const name = document.getElementById('delete-name').value.trim();
